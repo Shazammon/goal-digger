@@ -7,7 +7,8 @@ export default function GoalEdit(){
     //  state to hold our form
     const [form, setForm] = useState({
         content: '',
-        imageUrl: ''
+        imageUrl: '',
+        completed: false
     })
 
     const [errorMessage, setErrorMessage] = useState('')
@@ -16,32 +17,28 @@ export default function GoalEdit(){
     const navigate = useNavigate()
 
     useEffect(() => {
+        console.log(id)
         const getGoal = async () => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api-v1/users/goals/${id}`)
-            setForm(response.data.goals)
-        } catch (err) {
-            console.warn(err)
-            if(err.response) {
-                setErrorMessage(err.response.data.message)
-            }
+            // console.log('TACO',response.data)
+            setForm(response.data)
+            console.log(response.data)
+             } catch (err) {
+                console.warn(err)
+                if(err.response) {
+                    setErrorMessage(err.response.data.message)
+                }
+             }
         }
-    }
-    getGoal()
-}, [])
-    console.log(form)
+        getGoal()
+    }, [])
 
     const handleSubmit = async e => {
-        e.preventDefault()
         try {
-            const token = localStorage.getItem('jwt')
-            const options = {
-                headers: {
-                    'Authorization': token
-                }
-            }
-            const response = await axios.put(`${process.env.REACT_APP_SERVER_URL}/api-v1/users/goal/${id}`, form, options)
-            navigate(`/user/profile`)
+            e.preventDefault()
+            const response = await axios.put(`${process.env.REACT_APP_SERVER_URL}/goal/${id}`, form)
+            navigate(`/goal/${id}`)
         } catch(err) {
             console.warn(err)
             if(err.response){
